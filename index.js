@@ -28,6 +28,7 @@ const { SUPPORTED_GAMES } = require('./constants/games.js');
 const { GAME_HEADER, LICENSE_HEADER, MACHINE_HEADER } = require('./constants/headers.js');
 const { loadMachinesId, getMachineId, generateMachineId, saveMachinesId } = require('./functions/machineId.js');
 const { getAddress } = require('./utils.js');
+const proxyDetector = require('./functions/proxyDetection.js');
 
 // Constants
 const SERVER_PORT = IS_DEV ? 5000 : process.env.LICENSING_PORT ?? 80;
@@ -40,6 +41,8 @@ server.set('trust proxy', true);
 server.use(cors());
 server.use(express.json());
 server.use(express.static('public'));
+
+server.use(proxyDetector);
 
 server.get('/request', async (request, response) => {
   for (const [key, value] of Object.entries(request.headers))
