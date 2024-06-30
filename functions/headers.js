@@ -8,8 +8,10 @@
 const { GAME_HEADER, MACHINE_HEADER, LICENSE_HEADER } = require('../constants/headers.js');
 
 const checkHeaders = (headers, type) => {
-  const gameId = GAME_HEADER in headers ? headers[GAME_HEADER] : undefined;
+  // TODO:
   // const machineId = MACHINE_HEADER in headers ? headers[MACHINE_HEADER] : undefined;
+
+  const gameId = GAME_HEADER in headers ? headers[GAME_HEADER] : undefined;
   const licenseKey = LICENSE_HEADER in headers ? headers[LICENSE_HEADER] : undefined;
 
   const required = [];
