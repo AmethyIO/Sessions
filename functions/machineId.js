@@ -47,7 +47,7 @@ const generateMachineId = address => {
   return false;
 };
 
-const getMachineId = machineId => {
+const getMachineId = address => {
   if (!(address in machines))
     return false;
 
