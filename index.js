@@ -44,7 +44,7 @@ server.get('/request', async (request, response) => {
   for (const [key, value] of Object.entries(request.headers))
     request.headers[key] = typeof value === 'string' ? value.toLowerCase() : value;
 
-  const required = checkHeaders(request.headers);
+  const required = checkHeaders(request.headers, 'request');
   if (required.length > 0)
     return response.status(403).send({ error: `${required.join(', ')} is required` });
 
@@ -89,7 +89,7 @@ server.get('/get/:sid', async (request, response) => {
 
   const { sid } = request.params;
 
-  const required = checkHeaders(request.headers);
+  const required = checkHeaders(request.headers, 'get');
   if (required.length > 0)
     return response.status(403).send({ error: `${required.join(', ')} is required` });
 
