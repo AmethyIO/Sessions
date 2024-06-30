@@ -48,16 +48,10 @@ const generateMachineId = address => {
 };
 
 const getMachineId = machineId => {
-  let i;
-    
-  for (const [ address, id ] of Object.entries(machines)) {
-    if (id === machineId) {
-      i = id;
-      break;
-    }
-  }
+  if (!(address in machines))
+    return false;
 
-  return i || false;
+  return machines[address];
 }
 
 const saveMachinesId = () => {

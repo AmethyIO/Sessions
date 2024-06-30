@@ -45,9 +45,14 @@ server.get('/request', async (request, response) => {
   for (const [key, value] of Object.entries(request.headers))
     request.headers[key] = typeof value === 'string' ? value.toLowerCase() : value;
 
+  const address = getAddress(request);
+
   const required = checkHeaders(request.headers, 'request');
   if (required.length > 0)
     return response.status(403).send({ error: `${required.join(', ')} is required` });
+
+  if (!getMachineId(address))
+    return response.status(403).send({ error: 'Invalid machine ID' });
 
   const licenseKey = LICENSE_HEADER in request.headers ? request.headers[LICENSE_HEADER] : undefined;
 
@@ -70,10 +75,6 @@ server.get('/request', async (request, response) => {
   if (('status' in licenseData) && licenseData.status !== 'active')
     return response.status(401).send({ error: 'License is not active' });
 
-  const machineId = MACHINE_HEADER in request.headers ? request.headers[MACHINE_HEADER] : undefined;
-  if (!getMachineId(machineId))
-    return response.status(403).send({ error: 'Invalid machine ID' });
-
   const game = GAME_HEADER in request.headers ? request.headers[GAME_HEADER] : undefined;
   if (!SUPPORTED_GAMES[game])
     return response.status(404).send({ error: 'Game not found/unsupported' });
@@ -91,6 +92,8 @@ server.get('/request', async (request, response) => {
 server.get('/get/:sid', async (request, response) => {
   for (const [key, value] of Object.entries(request.headers))
     request.headers[key] = typeof value === 'string' ? value.toLowerCase() : value;
+
+  const address = getAddress(request);
 
   const { sid } = request.params;
 
@@ -110,8 +113,7 @@ server.get('/get/:sid', async (request, response) => {
   if (!licenseData)
     return;
 
-  const machineId = MACHINE_HEADER in request.headers ? request.headers[MACHINE_HEADER] : undefined;
-  if (!getMachineId(machineId))
+  if (!getMachineId(address))
     return response.status(403).send({ error: 'Invalid machine ID' });
 
   const session = getSession(licenseKey);
@@ -128,7 +130,7 @@ server.get('/get/:sid', async (request, response) => {
 });
 
 server.get('/mid', (request, response) => {
-  const address = getAddress(request)
+  const address = getAddress(request);
 
   let mid;
 
