@@ -24,3 +24,5 @@ webpack-stats.json
 
 # Ignore .env.
 .env
+
+database

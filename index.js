@@ -23,12 +23,13 @@ const {
   hasSession
 } = require('./functions/sessions.js');
 const { checkHeaders } = require('./functions/headers.js');
-const { ENVIRONMENT, IS_DEV } = require('./constants/environment.js');
+const { GAMES_PATH, ENVIRONMENT, IS_DEV } = require('./constants/environment.js');
 const { SUPPORTED_GAMES } = require('./constants/games.js');
 const { GAME_HEADER, LICENSE_HEADER } = require('./constants/headers.js');
+const { loadMachinesId, getMachineId, generateMachineId, saveMachinesId } = require('./functions/machineId.js');
+const { getAddress } = require('./utils.js');
 
 // Constants
-const GAMES_PATH = path.join(__dirname, 'games');
 const SERVER_PORT = IS_DEV ? 5000 : process.env.LICENSING_PORT ?? 80;
 
 // Server worker
@@ -118,6 +119,20 @@ server.get('/get/:sid', async (request, response) => {
   return response.setHeader('content-type', 'application/javascript').send(script);
 });
 
+server.get('/mid', (request, response) => {
+  const address = getAddress(request)
+
+  let mid;
+
+  if (address && typeof address === 'string') {
+    if (!getMachineId(address))
+      mid = generateMachineId(address);
+    else mid = getMachineId(address);
+  }
+
+  return response.json({ mid });
+});
+
 server.use((_, response) => response.status(403).send({ error: 'Access denied' }));
 
 // Server bootstrap
@@ -128,6 +143,9 @@ function bootstrap() {
     console.log('License server session hosting on port', SERVER_PORT);
   });
 
-  startSessionCleaner()
+  startSessionCleaner();
+  loadMachinesId();
+  setInterval(saveMachinesId, 5000);
 }
+
 bootstrap();
