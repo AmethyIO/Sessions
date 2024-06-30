@@ -25,7 +25,7 @@ const {
 const { checkHeaders } = require('./functions/headers.js');
 const { GAMES_PATH, ENVIRONMENT, IS_DEV } = require('./constants/environment.js');
 const { SUPPORTED_GAMES } = require('./constants/games.js');
-const { GAME_HEADER, LICENSE_HEADER } = require('./constants/headers.js');
+const { GAME_HEADER, LICENSE_HEADER, MACHINE_HEADER } = require('./constants/headers.js');
 const { loadMachinesId, getMachineId, generateMachineId, saveMachinesId } = require('./functions/machineId.js');
 const { getAddress } = require('./utils.js');
 
@@ -70,6 +70,10 @@ server.get('/request', async (request, response) => {
   if (('status' in licenseData) && licenseData.status !== 'active')
     return response.status(401).send({ error: 'License is not active' });
 
+  const machineId = MACHINE_HEADER in request.headers ? request.headers[MACHINE_HEADER] : undefined;
+  if (!getMachineId(machineId))
+    return response.status(403).send({ error: 'Invalid machine ID' });
+
   const game = GAME_HEADER in request.headers ? request.headers[GAME_HEADER] : undefined;
   if (!SUPPORTED_GAMES[game])
     return response.status(404).send({ error: 'Game not found/unsupported' });
@@ -105,6 +109,10 @@ server.get('/get/:sid', async (request, response) => {
 
   if (!licenseData)
     return;
+
+  const machineId = MACHINE_HEADER in request.headers ? request.headers[MACHINE_HEADER] : undefined;
+  if (!getMachineId(machineId))
+    return response.status(403).send({ error: 'Invalid machine ID' });
 
   const session = getSession(licenseKey);
   if (!session) return response.status(404).send({ error: 'Session does not exist' });
