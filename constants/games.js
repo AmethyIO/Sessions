@@ -6,7 +6,7 @@
  */
 
 const SUPPORTED_GAMES = {
-  ['0']: true // Starve
+  ['starve']: true // Starve
 };
 
 module.exports = { SUPPORTED_GAMES };
