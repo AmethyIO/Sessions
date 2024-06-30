@@ -51,7 +51,8 @@ server.get('/request', async (request, response) => {
   if (required.length > 0)
     return response.status(403).send({ error: `${required.join(', ')} is required` });
 
-  if (!getMachineId(address))
+  const mid = getMachineId(address);
+  if (!mid)
     return response.status(403).send({ error: 'Invalid machine ID' });
 
   const licenseKey = LICENSE_HEADER in request.headers ? request.headers[LICENSE_HEADER] : undefined;
@@ -79,7 +80,7 @@ server.get('/request', async (request, response) => {
   if (!SUPPORTED_GAMES[game])
     return response.status(404).send({ error: 'Game not found/unsupported' });
 
-  const registered = registerSession(licenseKey, game);
+  const registered = registerSession(licenseKey, mid, game);
   if (registered) {
     const { uuid, expires } = getSession(licenseKey);
 
@@ -113,12 +114,13 @@ server.get('/get/:sid', async (request, response) => {
   if (!licenseData)
     return;
 
-  if (!getMachineId(address))
+  const mid = getMachineId(address);
+  if (!mid)
     return response.status(403).send({ error: 'Invalid machine ID' });
 
   const session = getSession(licenseKey);
   if (!session) return response.status(404).send({ error: 'Session does not exist' });
-  if (session.uuid !== sid || session.used) return response.status(400).send({ error: 'Invalid session' });
+  if (session.uuid !== sid || session.mid !== mid || session.used) return response.status(400).send({ error: 'Invalid session' });
 
   session.used = true;
 

@@ -9,6 +9,7 @@ const crypto = require('crypto');
 
 const sessions = {
   // [license key] = {
+  // mid - request user machine id
   // uuid - generated uuid for use in loader
   // game - supported game that we going to give the actual script (cheat) for it
   // used - is used already
@@ -16,13 +17,14 @@ const sessions = {
   // }
 }
 
-const registerSession = (licenseKey, game) => {
+const registerSession = (licenseKey, machineId, game) => {
   if (licenseKey in sessions)
     return false;
 
   sessions[licenseKey] = {};
   const obj = sessions[licenseKey];
   
+  obj.mid = machineId;
   obj.uuid = crypto.randomUUID();
   obj.game = game;
   obj.used = false;
