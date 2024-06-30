@@ -27,9 +27,7 @@ const registerSession = (licenseKey, game) => {
   obj.uuid = crypto.randomUUID();
   obj.game = game;
   obj.used = false;
-  obj.expires = ENVIRONMENT === 'dev'
-    ? Date.now() + 999999999
-    : Date.now() + 60 * 1000;
+  obj.expires = Date.now() + 60 * 1000;
 
   console.log('Session registered', JSON.stringify(obj));
   return true;
