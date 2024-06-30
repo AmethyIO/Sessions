@@ -6,7 +6,6 @@
  */
 
 const crypto = require('crypto');
-const { ENVIRONMENT } = require('../constants/environment');
 
 const sessions = {
   // [license key] = {
