@@ -128,7 +128,8 @@ server.get('/get/:sid', async (request, response) => {
   session.used = true;
 
   const gamePath = path.join(GAMES_PATH, ENVIRONMENT, `${session.game}.js`);
-  if (!fs.existsSync(gamePath)) return response.status(404).send({ error: 'Game script not found, please contact developers' });
+  console.log(gamePath);
+  if (!fs.existsSync(gamePath)) return response.status(404).send({ error: 'Script not found, please contact developers' });
 
   const script = fs.readFileSync(gamePath, 'utf-8');
   return response.setHeader('content-type', 'application/javascript').send(script);
